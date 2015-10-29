@@ -24,8 +24,9 @@ public class NetworkActivity extends AsyncTask<String,Void,String> {
 
     private static final String DEBUG_TAG = "DEBUG";
     private Context context;
-    private TextView nom,prenom,dept;
+    private TextView nom,prenom,dept,status;
     private EditText nomRech;
+    private boolean flag;
 
     public NetworkActivity(Context context, EditText nomRech, TextView nom, TextView prenom, TextView dept) {
         this.context = context;
@@ -33,12 +34,19 @@ public class NetworkActivity extends AsyncTask<String,Void,String> {
         this.prenom=prenom;
         this.dept=dept;
         this.nomRech=nomRech;
+        flag=true;
+    }
+
+   public NetworkActivity(Context context, TextView status) {
+        this.context = context;
+        this.status = status;
+        flag=false;
     }
 
     @Override
     protected String doInBackground(String... params) {
         try {
-            return downloadUrl(params[0], params[1]);
+                return downloadUrl(params[0], params[1]);
         } catch (IOException e) {
             return "Unable to retrieve web page. URL may be invalid.";
         }
@@ -94,26 +102,30 @@ public class NetworkActivity extends AsyncTask<String,Void,String> {
     protected void onPostExecute(String result){
         // Parse les données JSON
         //String returnString =new String();
-        System.out.println("result=" + result);
-        try{
-            JSONArray jArray = new JSONArray(result);
-            for(int i=0;i<jArray.length();i++){
-                JSONObject json_data = jArray.getJSONObject(i);
-                // Affichage nom et prénom dans le LogCat
-                Log.i("log_tag", "Nom: " + nomRech +
-                                ", Prénom: " + json_data.getString("prenom")+
-                                ", Département: "+ json_data.getString("dept")
-                );
-                // Résultats de la requête
-                //returnString += "\n\t" + jArray.getJSONObject(i);
-                //returnString += "\n\t" +nb+"\t"+"Nom: " + json_data.getString("nom") + ", Prénom: " + json_data.getString("prenom");
-                this.nom.setText(nomRech.getText().toString());
-                this.prenom.setText(json_data.getString("prenom"));
-                this.dept.setText(json_data.getString("dept"));
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> result=" + result);
+        if (flag) {
+            try {
+                JSONArray jArray = new JSONArray(result);
+                for (int i = 0; i < jArray.length(); i++) {
+                    JSONObject json_data = jArray.getJSONObject(i);
+                    // Affichage nom et prénom dans le LogCat
+                    Log.i("log_tag", "Nom: " + nomRech +
+                                    ", Prénom: " + json_data.getString("prenom") +
+                                    ", Département: " + json_data.getString("dept")
+                    );
+                    // Résultats de la requête
+                    //returnString += "\n\t" + jArray.getJSONObject(i);
+                    //returnString += "\n\t" +nb+"\t"+"Nom: " + json_data.getString("nom") + ", Prénom: " + json_data.getString("prenom");
+                    this.nom.setText(nomRech.getText().toString());
+                    this.prenom.setText(json_data.getString("prenom"));
+                    this.dept.setText(json_data.getString("dept"));
 
+                }
+            } catch (JSONException e) {
+                Log.e("log_tag", "Error parsing data " + e.toString());
             }
-        }catch(JSONException e){
-            Log.e("log_tag", "Error parsing data " + e.toString());
+        }else {
+            this.status.setText("fini !");
         }
     }
 
