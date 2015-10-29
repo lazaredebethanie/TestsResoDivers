@@ -1,6 +1,7 @@
 package com.example.j118923.testsresodivers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -60,6 +61,11 @@ public class MainActivity extends AppCompatActivity {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void clkAddPers (View view) {
+        Intent intentAddAct = new Intent(this,AddPersonne.class);
+        startActivity(intentAddAct);
     }
 
 }
